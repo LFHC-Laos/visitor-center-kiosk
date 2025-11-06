@@ -9,7 +9,6 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
-        /* AJUSTÉ POUR TV */
         html, body { 
             width: 100vw; 
             height: 100vh; 
@@ -19,7 +18,6 @@
             color: white; 
         }
         
-        /* HEADER RÉDUIT POUR TV */
         .header { 
             text-align: center; 
             padding: 10px 15px 8px; 
@@ -53,7 +51,6 @@
         
         .header p { font-size: 0.95rem; opacity: 0.95; font-weight: 300; }
         
-        /* MENU CONTAINER OPTIMISÉ TV */
         .menu-container { 
             display: grid; 
             grid-template-columns: repeat(3, 1fr); 
@@ -114,7 +111,6 @@
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); 
         }
         
-        /* VIDEO CONTAINER - VRAI PLEIN ÉCRAN */
         .video-container { 
             display: none; 
             position: fixed; 
@@ -143,7 +139,6 @@
             left: 0; 
         }
         
-        /* BOUTON BACK - TOUJOURS VISIBLE */
         .back-button { 
             position: fixed; 
             top: 20px; 
@@ -169,7 +164,7 @@
             transform: scale(1.05); 
         }
         
-        /* OVERLAYS YOUTUBE - RENFORCÉS */
+        /* OVERLAYS YOUTUBE ULTRA-RENFORCÉS */
         .youtube-overlay-blocker {
             position: fixed;
             top: 0;
@@ -180,49 +175,49 @@
             pointer-events: none;
         }
         
-        /* Bloque coin bas droit (logo YouTube, info) */
-        .block-youtube-br {
+        /* Bloque TOUT LE BAS (contrôles + suggestions) */
+        .block-youtube-bottom {
             position: absolute;
             bottom: 0;
-            right: 0;
-            width: 400px;
-            height: 150px;
+            left: 0;
+            width: 100%;
+            height: 180px;
             background: transparent;
             pointer-events: auto;
             z-index: 9999999;
         }
         
-        /* Bloque coin haut droit (partage, etc) */
-        .block-youtube-tr {
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 350px;
-            height: 120px;
-            background: transparent;
-            pointer-events: auto;
-            z-index: 9999999;
-        }
-        
-        /* Bloque barre titre en haut */
+        /* Bloque TOUT LE HAUT */
         .block-youtube-top {
             position: absolute;
             top: 0;
             left: 0;
-            width: calc(100% - 350px);
-            height: 80px;
+            width: 100%;
+            height: 100px;
             background: transparent;
             pointer-events: auto;
             z-index: 9999999;
         }
         
-        /* Bloque coin bas gauche */
-        .block-youtube-bl {
+        /* Bloque DROITE */
+        .block-youtube-right {
             position: absolute;
-            bottom: 0;
+            top: 100px;
+            right: 0;
+            width: 400px;
+            height: calc(100% - 280px);
+            background: transparent;
+            pointer-events: auto;
+            z-index: 9999999;
+        }
+        
+        /* Bloque GAUCHE */
+        .block-youtube-left {
+            position: absolute;
+            top: 100px;
             left: 0;
-            width: 350px;
-            height: 120px;
+            width: 100px;
+            height: calc(100% - 280px);
             background: transparent;
             pointer-events: auto;
             z-index: 9999999;
@@ -284,12 +279,12 @@
         </button>
         <div class="video-wrapper" id="videoPlayer"></div>
         
-        <!-- OVERLAYS RENFORCÉS POUR BLOQUER YOUTUBE -->
+        <!-- OVERLAYS MAXIMUMS POUR BLOQUER TOUT -->
         <div class="youtube-overlay-blocker" id="youtubeBlocker">
-            <div class="block-youtube-br"></div>
-            <div class="block-youtube-tr"></div>
+            <div class="block-youtube-bottom"></div>
             <div class="block-youtube-top"></div>
-            <div class="block-youtube-bl"></div>
+            <div class="block-youtube-right"></div>
+            <div class="block-youtube-left"></div>
         </div>
     </div>
     
@@ -312,7 +307,6 @@
         
         function onYouTubeIframeAPIReady() {
             playerReady = true;
-            console.log('YouTube API Ready');
         }
         
         function generateTiles() {
@@ -337,19 +331,25 @@
             container.classList.add('active');
             blocker.style.display = 'block';
             
+            // PARAMÈTRES YOUTUBE ULTRA-OPTIMISÉS
             currentPlayer = new YT.Player('youtube-player', {
                 height: '100%',
                 width: '100%',
                 videoId: youtubeId,
                 playerVars: {
-                    'autoplay': 1,
-                    'controls': 1,
-                    'modestbranding': 1,
-                    'rel': 0,
-                    'showinfo': 0,
-                    'fs': 0,
-                    'iv_load_policy': 3,
-                    'disablekb': 1
+                    'autoplay': 1,              // Autoplay
+                    'controls': 1,              // Montrer contrôles (mais on bloque avec overlays)
+                    'disablekb': 1,             // DÉSACTIVE CLAVIER (pas d'avance rapide!)
+                    'fs': 0,                    // Pas de fullscreen
+                    'modestbranding': 1,        // Enlève logo YouTube autant que possible
+                    'rel': 0,                   // PAS de suggestions de vidéos similaires
+                    'showinfo': 0,              // Pas d'infos vidéo
+                    'iv_load_policy': 3,        // DÉSACTIVE annotations/cards/pastilles
+                    'cc_load_policy': 0,        // Pas de sous-titres par défaut
+                    'playsinline': 1,           // Play inline
+                    'enablejsapi': 1,           // Active API JS
+                    'origin': window.location.origin,
+                    'widget_referrer': window.location.href
                 },
                 events: {
                     'onReady': onPlayerReady,
@@ -359,12 +359,19 @@
         }
         
         function onPlayerReady(event) {
+            // Force play et qualité optimale
             event.target.playVideo();
+            // Essaie de forcer HD pour loading plus rapide
+            event.target.setPlaybackQuality('hd720');
         }
         
         function onPlayerStateChange(event) {
+            // YT.PlayerState.ENDED = 0
             if (event.data === 0) {
-                closeVideo();
+                // Vidéo terminée, retour immédiat au menu (pas de suggestions!)
+                setTimeout(() => {
+                    closeVideo();
+                }, 500); // Petit délai pour éviter de voir l'écran de suggestions
             }
         }
         
@@ -383,9 +390,20 @@
             player.innerHTML = '';
         }
         
+        // Bloque aussi les touches du document
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') closeVideo();
-        });
+            // Escape pour fermer
+            if (e.key === 'Escape') {
+                closeVideo();
+            }
+            // Bloque flèches gauche/droite quand vidéo active
+            const videoActive = document.getElementById('videoContainer').classList.contains('active');
+            if (videoActive && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            }
+        }, true);
         
         generateTiles();
     </script>
