@@ -6,7 +6,6 @@
     <title>LFHC Visitor Center</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://player.vimeo.com/api/player.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Poppins', sans-serif; background: linear-gradient(135deg, #6FB03B 0%, #8BC34A 50%, #9CCC65 100%); color: white; overflow: hidden; }
@@ -31,80 +30,7 @@
         .video-container.active { display: block !important; }
         .video-wrapper { width: 100% !important; height: 100% !important; position: absolute !important; top: 0 !important; left: 0 !important; }
         .video-wrapper iframe { width: 100% !important; height: 100% !important; border: none !important; position: absolute !important; top: 0 !important; left: 0 !important; }
-        
-        /* BLOQUEURS VIMEO AGRANDIS - Couvrent tous les boutons */
-        .vimeo-blockers { 
-            position: absolute !important; 
-            top: 0 !important; 
-            left: 0 !important; 
-            width: 100% !important; 
-            height: 100% !important; 
-            z-index: 9999998 !important; 
-            pointer-events: none !important; 
-        }
-        
-        /* Bloque TOUT LE COIN BAS DROIT (Logo Vimeo + Incrustation) */
-        .block-bottom-right {
-            position: absolute !important;
-            bottom: 0 !important;
-            right: 0 !important;
-            width: 300px !important;
-            height: 120px !important;
-            z-index: 9999998 !important;
-            pointer-events: auto !important;
-            cursor: default !important;
-        }
-        
-        /* Bloque TOUT LE COIN HAUT DROIT (Partager + boutons) */
-        .block-top-right {
-            position: absolute !important;
-            top: 0 !important;
-            right: 0 !important;
-            width: 300px !important;
-            height: 120px !important;
-            z-index: 9999998 !important;
-            pointer-events: auto !important;
-            cursor: default !important;
-        }
-        
-        /* Bloque TOUTE LA BARRE DU HAUT (titre, etc) */
-        .block-top-bar {
-            position: absolute !important;
-            top: 0 !important;
-            left: 0 !important;
-            right: 300px !important;
-            height: 60px !important;
-            z-index: 9999998 !important;
-            pointer-events: auto !important;
-            cursor: default !important;
-        }
-        
-        /* Bloque TOUTE LA BARRE DU BAS sauf le centre */
-        .block-bottom-left {
-            position: absolute !important;
-            bottom: 0 !important;
-            left: 0 !important;
-            width: 300px !important;
-            height: 100px !important;
-            z-index: 9999998 !important;
-            pointer-events: auto !important;
-            cursor: default !important;
-        }
-        
-        /* Zone centrale pour permettre play/pause */
-        .allow-center-click {
-            position: absolute !important;
-            top: 50% !important;
-            left: 50% !important;
-            transform: translate(-50%, -50%) !important;
-            width: 50% !important;
-            height: 50% !important;
-            z-index: 9999997 !important;
-            pointer-events: auto !important;
-        }
-        
-        .back-button { position: fixed !important; top: 30px; left: 30px; background: rgba(111, 176, 59, 0.95); border: 2px solid white; color: white; padding: 15px 35px; font-size: 1.2rem; font-weight: 500; border-radius: 50px; cursor: pointer; transition: opacity 0.3s ease; z-index: 9999999 !important; font-family: 'Poppins', sans-serif; opacity: 1; }
-        .back-button.hidden { opacity: 0; pointer-events: auto; }
+        .back-button { position: fixed !important; top: 30px; left: 30px; background: rgba(111, 176, 59, 0.95); border: 2px solid white; color: white; padding: 15px 35px; font-size: 1.2rem; font-weight: 500; border-radius: 50px; cursor: pointer; z-index: 9999999 !important; font-family: 'Poppins', sans-serif; }
         .back-button:hover { background: rgba(139, 195, 74, 1); transform: scale(1.08); }
         .play-overlay { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80px; height: 80px; background: rgba(255, 255, 255, 0.95); border-radius: 50%; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease; z-index: 3; pointer-events: none; }
         .tile:hover .play-overlay { opacity: 1; }
@@ -128,21 +54,6 @@
     <div class="video-container" id="videoContainer">
         <button class="back-button" id="backButton" onclick="closeVideo()"><i class="fas fa-arrow-left"></i> Back to Menu</button>
         <div class="video-wrapper" id="videoPlayer"></div>
-        
-        <!-- OVERLAYS DE PROTECTION ÉLARGIS -->
-        <div class="vimeo-blockers">
-            <!-- Bloque TOUT le coin bas droit (logo + incrustation) -->
-            <div class="block-bottom-right"></div>
-            <!-- Bloque TOUT le coin haut droit (partager + boutons) -->
-            <div class="block-top-right"></div>
-            <!-- Bloque toute la barre du haut -->
-            <div class="block-top-bar"></div>
-            <!-- Bloque le coin bas gauche -->
-            <div class="block-bottom-left"></div>
-        </div>
-        
-        <!-- Zone centrale pour play/pause -->
-        <div class="allow-center-click" onclick="togglePlayPause()"></div>
     </div>
     <script>
         const videoCategories = [
@@ -153,63 +64,44 @@
             { title: "Our Programs", icon: "fa-solid fa-star", vimeoId: "247537254" },
             { title: "Partners & Support", icon: "fa-solid fa-handshake", vimeoId: "245814218" }
         ];
-        let buttonFadeTimer, currentPlayer = null;
-        const FADE_DELAY = 3000;
         
         function generateTiles() {
             const container = document.getElementById('mainMenu');
             videoCategories.forEach((cat, i) => {
                 const tile = document.createElement('div');
-                tile.className = 'tile'; tile.onclick = () => playVideo(i);
+                tile.className = 'tile';
+                tile.onclick = () => playVideo(i);
                 tile.style.backgroundImage = `url('https://vumbnail.com/${cat.vimeoId}_large.jpg')`;
                 tile.innerHTML = `<div class="tile-content"><div class="tile-icon"><i class="${cat.icon}"></i></div><div class="tile-title">${cat.title}</div></div><div class="play-overlay"><div class="play-icon"></div></div>`;
                 container.appendChild(tile);
             });
         }
         
-        function showBackButton() {
-            const btn = document.getElementById('backButton'); btn.classList.remove('hidden');
-            clearTimeout(buttonFadeTimer);
-            buttonFadeTimer = setTimeout(() => { btn.classList.add('hidden'); }, FADE_DELAY);
-        }
-        
-        function togglePlayPause() {
-            if (currentPlayer) {
-                currentPlayer.getPaused().then(function(paused) {
-                    if (paused) {
-                        currentPlayer.play();
-                    } else {
-                        currentPlayer.pause();
-                    }
-                });
-            }
-        }
-        
         function playVideo(index) {
             const container = document.getElementById('videoContainer');
             const player = document.getElementById('videoPlayer');
             const vimeoId = videoCategories[index].vimeoId;
-            player.innerHTML = `<iframe id="vimeo-player" src="https://player.vimeo.com/video/${vimeoId}?autoplay=1&title=0&byline=0&portrait=0" allow="autoplay; fullscreen" allowfullscreen></iframe>`;
-            container.classList.add('active'); document.body.style.overflow = 'hidden';
-            const iframe = document.getElementById('vimeo-player');
-            currentPlayer = new Vimeo.Player(iframe);
-            currentPlayer.on('ended', function() { closeVideo(); });
-            showBackButton();
+            
+            // Simple iframe without API - more compatible with old browsers
+            player.innerHTML = `<iframe src="https://player.vimeo.com/video/${vimeoId}?title=0&byline=0&portrait=0" allow="fullscreen" allowfullscreen frameborder="0"></iframe>`;
+            
+            container.classList.add('active');
+            document.body.style.overflow = 'hidden';
         }
         
         function closeVideo() {
             const container = document.getElementById('videoContainer');
             const player = document.getElementById('videoPlayer');
-            if (currentPlayer) { currentPlayer.destroy(); currentPlayer = null; }
-            container.classList.remove('active'); player.innerHTML = ''; document.body.style.overflow = 'hidden';
-            clearTimeout(buttonFadeTimer);
+            
+            player.innerHTML = '';
+            container.classList.remove('active');
+            document.body.style.overflow = 'hidden';
         }
         
-        document.getElementById('videoContainer').addEventListener('mousemove', function() {
-            if (this.classList.contains('active')) { showBackButton(); }
+        // Allow Escape key to close video
+        document.addEventListener('keydown', (e) => { 
+            if (e.key === 'Escape') closeVideo(); 
         });
-        
-        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeVideo(); });
         
         generateTiles();
     </script>
