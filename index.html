@@ -159,10 +159,17 @@
             align-items: center !important;
             gap: 10px !important;
             pointer-events: auto !important;
+            opacity: 1 !important;
+            transition: opacity 0.5s ease !important;
         }
         
         .back-button.active {
-            display: flex !important; /* Visible seulement quand actif */
+            display: flex !important; /* Visible seulement quand vidéo active */
+        }
+        
+        .back-button.hidden {
+            opacity: 0 !important; /* Transparent mais toujours là */
+            pointer-events: none !important; /* Non cliquable quand caché */
         }
         
         .back-button:hover { 
@@ -319,6 +326,29 @@
         
         let currentPlayer = null;
         let playerReady = false;
+        let backButtonTimer = null; // Timer pour cacher le bouton
+        const BACK_BUTTON_DELAY = 4000; // 4 secondes avant de cacher
+        
+        // Fonction pour afficher le bouton Back
+        function showBackButton() {
+            const backButton = document.getElementById('backButton');
+            if (!backButton.classList.contains('active')) return; // Ne fonctionne que si vidéo active
+            
+            backButton.classList.remove('hidden');
+            
+            // Réinitialise le timer
+            clearTimeout(backButtonTimer);
+            backButtonTimer = setTimeout(() => {
+                backButton.classList.add('hidden');
+            }, BACK_BUTTON_DELAY);
+        }
+        
+        // Fonction pour cacher immédiatement le bouton
+        function hideBackButton() {
+            const backButton = document.getElementById('backButton');
+            backButton.classList.add('hidden');
+            clearTimeout(backButtonTimer);
+        }
         
         function onYouTubeIframeAPIReady() {
             playerReady = true;
@@ -347,6 +377,9 @@
             container.classList.add('active');
             overlayMaster.classList.add('active');
             backButton.classList.add('active'); // Utilise classe active
+            
+            // Affiche le bouton au démarrage, puis le cache après 4 secondes
+            showBackButton();
             
             currentPlayer = new YT.Player('youtube-player', {
                 height: '100%',
@@ -402,21 +435,30 @@
                 currentPlayer = null;
             }
             
+            // Nettoie le timer
+            clearTimeout(backButtonTimer);
+            
             container.classList.remove('active');
             overlayMaster.classList.remove('active');
             backButton.classList.remove('active'); // Enlève classe active
+            backButton.classList.remove('hidden'); // Enlève hidden aussi
             player.innerHTML = '';
         }
         
         // Bloque toutes les touches de navigation
         document.addEventListener('keydown', (e) => {
+            const videoActive = document.getElementById('videoContainer').classList.contains('active');
+            
             if (e.key === 'Escape') {
                 closeVideo();
                 return;
             }
             
-            const videoActive = document.getElementById('videoContainer').classList.contains('active');
             if (videoActive) {
+                // Affiche le bouton Back lors de n'importe quelle touche
+                showBackButton();
+                
+                // Bloque les touches de navigation vidéo
                 if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', ' ', 'Home', 'End', 'PageUp', 'PageDown'].includes(e.key)) {
                     e.preventDefault();
                     e.stopPropagation();
@@ -438,6 +480,22 @@
                 }
             }
         }, true);
+        
+        // Détecte mouvement de souris/pointeur pour afficher le bouton
+        document.addEventListener('mousemove', (e) => {
+            const videoActive = document.getElementById('videoContainer').classList.contains('active');
+            if (videoActive) {
+                showBackButton();
+            }
+        });
+        
+        // Détecte aussi le touchmove pour appareils tactiles
+        document.addEventListener('touchmove', (e) => {
+            const videoActive = document.getElementById('videoContainer').classList.contains('active');
+            if (videoActive) {
+                showBackButton();
+            }
+        });
         
         generateTiles();
     </script>
