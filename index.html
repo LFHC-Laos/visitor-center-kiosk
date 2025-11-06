@@ -139,39 +139,45 @@
             left: 0; 
         }
         
+        /* BOUTON BACK - AU-DESSUS DE TOUT MAIS CACHÉ PAR DÉFAUT */
         .back-button { 
-            position: fixed; 
-            top: 20px; 
-            left: 20px; 
-            background: rgba(111, 176, 59, 0.95); 
-            border: 3px solid white; 
-            color: white; 
-            padding: 12px 28px; 
-            font-size: 1.1rem; 
-            font-weight: 600; 
-            border-radius: 50px; 
-            cursor: pointer; 
-            z-index: 10000000; 
-            font-family: 'Poppins', sans-serif; 
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            position: fixed !important;
+            top: 20px !important;
+            left: 20px !important;
+            background: rgba(111, 176, 59, 0.95) !important;
+            border: 3px solid white !important;
+            color: white !important;
+            padding: 12px 28px !important;
+            font-size: 1.1rem !important;
+            font-weight: 600 !important;
+            border-radius: 50px !important;
+            cursor: pointer !important;
+            z-index: 99999999 !important; /* ULTRA ÉLEVÉ - au-dessus des overlays */
+            font-family: 'Poppins', sans-serif !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
+            display: none !important; /* CACHÉ PAR DÉFAUT */
+            align-items: center !important;
+            gap: 10px !important;
+            pointer-events: auto !important;
+        }
+        
+        .back-button.active {
+            display: flex !important; /* Visible seulement quand actif */
         }
         
         .back-button:hover { 
-            background: rgba(139, 195, 74, 1); 
-            transform: scale(1.05); 
+            background: rgba(139, 195, 74, 1) !important;
+            transform: scale(1.05) !important;
         }
         
-        /* NOUVEAU SYSTÈME D'OVERLAYS - COUVRE TOUT SAUF LE CENTRE */
+        /* OVERLAY SYSTÈME ULTRA-MASSIF - Couvre 95% de l'écran */
         .youtube-overlay-master {
             position: fixed !important;
             top: 0 !important;
             left: 0 !important;
             width: 100vw !important;
             height: 100vh !important;
-            z-index: 9999999 !important;
+            z-index: 50000000 !important; /* En-dessous du bouton Back mais au-dessus de YouTube */
             pointer-events: none !important;
             display: none;
         }
@@ -180,56 +186,56 @@
             display: block !important;
         }
         
-        /* Barre HAUTE - couvre tout le haut */
+        /* OVERLAY TOP - 35% de la hauteur */
         .overlay-top {
             position: absolute !important;
             top: 0 !important;
             left: 0 !important;
             width: 100% !important;
-            height: 25% !important;
+            height: 35% !important;
             background: transparent !important;
             pointer-events: auto !important;
-            z-index: 10000000 !important;
+            z-index: 50000001 !important;
         }
         
-        /* Barre BASSE - couvre tout le bas avec contrôles */
+        /* OVERLAY BOTTOM - 35% de la hauteur */
         .overlay-bottom {
             position: absolute !important;
             bottom: 0 !important;
             left: 0 !important;
             width: 100% !important;
-            height: 25% !important;
+            height: 35% !important;
             background: transparent !important;
             pointer-events: auto !important;
-            z-index: 10000000 !important;
+            z-index: 50000001 !important;
         }
         
-        /* Bande GAUCHE - entre haut et bas */
+        /* OVERLAY LEFT - 30% de la largeur */
         .overlay-left {
             position: absolute !important;
-            top: 25% !important;
+            top: 35% !important;
             left: 0 !important;
-            width: 20% !important;
-            height: 50% !important;
+            width: 30% !important;
+            height: 30% !important;
             background: transparent !important;
             pointer-events: auto !important;
-            z-index: 10000000 !important;
+            z-index: 50000001 !important;
         }
         
-        /* Bande DROITE - entre haut et bas */
+        /* OVERLAY RIGHT - 30% de la largeur */
         .overlay-right {
             position: absolute !important;
-            top: 25% !important;
+            top: 35% !important;
             right: 0 !important;
-            width: 20% !important;
-            height: 50% !important;
+            width: 30% !important;
+            height: 30% !important;
             background: transparent !important;
             pointer-events: auto !important;
-            z-index: 10000000 !important;
+            z-index: 50000001 !important;
         }
         
-        /* Zone CENTRALE LIBRE pour play/pause - 60% de largeur, 50% de hauteur */
-        /* Cette zone n'est PAS couverte, donc cliquable */
+        /* ZONE CENTRALE LIBRE : 40% largeur × 30% hauteur au centre */
+        /* Cette petite zone reste cliquable pour play/pause */
         
         .play-overlay { 
             position: absolute; 
@@ -281,14 +287,16 @@
     <div class="menu-container" id="mainMenu"></div>
     
     <div class="video-container" id="videoContainer">
-        <button class="back-button" id="backButton" onclick="closeVideo()">
-            <i class="fas fa-arrow-left"></i>
-            <span>Back to Menu</span>
-        </button>
         <div class="video-wrapper" id="videoPlayer"></div>
     </div>
     
-    <!-- OVERLAYS SYSTÈME RENFORCÉ - Couvre TOUT sauf le centre -->
+    <!-- BOUTON BACK - Séparé pour être AU-DESSUS de tout -->
+    <button class="back-button" id="backButton" onclick="closeVideo()">
+        <i class="fas fa-arrow-left"></i>
+        <span>Back to Menu</span>
+    </button>
+    
+    <!-- OVERLAYS MASSIFS - En-dessous du bouton Back -->
     <div class="youtube-overlay-master" id="overlayMaster">
         <div class="overlay-top"></div>
         <div class="overlay-bottom"></div>
@@ -300,7 +308,6 @@
     <script src="https://www.youtube.com/iframe_api"></script>
     
     <script>
-        // VIDEOS YOUTUBE TEST
         const videoCategories = [
             { title: "Discover LFHC", icon: "fa-solid fa-hospital", youtubeId: "dQw4w9WgXcQ" },
             { title: "Family Testimonials", icon: "fa-solid fa-heart", youtubeId: "9bZkp7q19f0" },
@@ -333,13 +340,14 @@
             const container = document.getElementById('videoContainer');
             const player = document.getElementById('videoPlayer');
             const overlayMaster = document.getElementById('overlayMaster');
+            const backButton = document.getElementById('backButton');
             const youtubeId = videoCategories[index].youtubeId;
             
             player.innerHTML = '<div id="youtube-player"></div>';
             container.classList.add('active');
             overlayMaster.classList.add('active');
+            backButton.classList.add('active'); // Utilise classe active
             
-            // PARAMÈTRES YOUTUBE OPTIMISÉS
             currentPlayer = new YT.Player('youtube-player', {
                 height: '100%',
                 width: '100%',
@@ -347,7 +355,7 @@
                 playerVars: {
                     'autoplay': 1,
                     'controls': 1,
-                    'disablekb': 1,             // Désactive clavier
+                    'disablekb': 1,
                     'fs': 0,
                     'modestbranding': 1,
                     'rel': 0,
@@ -356,8 +364,7 @@
                     'cc_load_policy': 0,
                     'playsinline': 1,
                     'enablejsapi': 1,
-                    'origin': window.location.origin,
-                    'widget_referrer': window.location.href
+                    'origin': window.location.origin
                 },
                 events: {
                     'onReady': onPlayerReady,
@@ -367,13 +374,10 @@
         }
         
         function onPlayerReady(event) {
-            // Force play et qualité 1080p
             event.target.playVideo();
             
-            // Force 1080p (highres essaie la plus haute qualité disponible)
+            // Force 1080p
             event.target.setPlaybackQuality('hd1080');
-            
-            // Fallback: essaie aussi highres
             setTimeout(() => {
                 event.target.setPlaybackQuality('highres');
             }, 1000);
@@ -381,7 +385,6 @@
         
         function onPlayerStateChange(event) {
             if (event.data === 0) {
-                // Vidéo terminée
                 setTimeout(() => {
                     closeVideo();
                 }, 500);
@@ -392,6 +395,7 @@
             const container = document.getElementById('videoContainer');
             const player = document.getElementById('videoPlayer');
             const overlayMaster = document.getElementById('overlayMaster');
+            const backButton = document.getElementById('backButton');
             
             if (currentPlayer && currentPlayer.destroy) {
                 currentPlayer.destroy();
@@ -400,10 +404,11 @@
             
             container.classList.remove('active');
             overlayMaster.classList.remove('active');
+            backButton.classList.remove('active'); // Enlève classe active
             player.innerHTML = '';
         }
         
-        // Bloque touches clavier
+        // Bloque toutes les touches de navigation
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 closeVideo();
@@ -412,10 +417,23 @@
             
             const videoActive = document.getElementById('videoContainer').classList.contains('active');
             if (videoActive) {
-                // Bloque TOUTES les touches de navigation vidéo
-                if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', ' ', 'Home', 'End'].includes(e.key)) {
+                if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', ' ', 'Home', 'End', 'PageUp', 'PageDown'].includes(e.key)) {
                     e.preventDefault();
                     e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    return false;
+                }
+            }
+        }, true);
+        
+        // Bloque aussi les événements keyup
+        document.addEventListener('keyup', (e) => {
+            const videoActive = document.getElementById('videoContainer').classList.contains('active');
+            if (videoActive) {
+                if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', ' ', 'Home', 'End', 'PageUp', 'PageDown'].includes(e.key)) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
                     return false;
                 }
             }
