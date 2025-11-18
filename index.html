@@ -26,7 +26,9 @@
         }
         
         .logo-container { 
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
             background: white; 
             padding: 12px 20px; 
             border-radius: 12px; 
@@ -34,10 +36,28 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); 
         }
         
-        .logo-container img {
+        .logo-heart {
             height: 50px;
             width: auto;
-            display: block;
+        }
+        
+        .logo-text {
+            text-align: left;
+        }
+        
+        .logo-lao {
+            font-size: 10px;
+            color: #333;
+            margin: 0;
+            line-height: 1.2;
+        }
+        
+        .logo-en {
+            font-size: 13px;
+            color: #333;
+            font-weight: 600;
+            margin: 0;
+            letter-spacing: 0.5px;
         }
         
         .header h1 { 
@@ -279,7 +299,11 @@
 <body>
     <div class="header">
         <div class="logo-container">
-            <img src="https://images.squarespace-cdn.com/content/v1/6059e881e22c8042fb31c88f/d1b91f91-c977-4ca5-8475-b1855d4c66e0/Screenshot+2025-11-12+at+12.14.27.png?format=1500w" alt="Lao Friends Hospital for Children & Friends Without A Border">
+            <img src="https://images.squarespace-cdn.com/content/v1/6059e881e22c8042fb31c88f/1617460128427-P4LWJQ12JUQ0WMEITJ69/FWAB_Heart.png" alt="LFHC Heart" class="logo-heart">
+            <div class="logo-text">
+                <p class="logo-lao">ໂຮງໝໍເດັກລາວອາມິດພື້ນເມືອງລາວ</p>
+                <p class="logo-en">LAO FRIENDS HOSPITAL FOR CHILDREN</p>
+            </div>
         </div>
         <h1>Welcome to the Lao Friends Hospital for Children Visitor Centre</h1>
         <p>Select a video to learn about our work, programs, and the children we care for</p>
@@ -309,7 +333,7 @@
         // VRAIES VIDÉOS LFHC
         const videoCategories = [
             { title: "Inside Our Hospital", icon: "fa-solid fa-hospital", youtubeId: "hrzHnsN0Yfk" },
-            { title: "10 Years of Making a Difference", icon: "fa-solid fa-award", youtubeId: "hrzHnsN0Yfk" },
+            { title: "10 Years of Making a Difference", icon: "fa-solid fa-award", youtubeId: "jHjZKocnH34" },
             { title: "Fighting Malnutrition in Laos", icon: "fa-solid fa-heart-pulse", youtubeId: "H6kqcI1_x8A" },
             { title: "Born 28-Week Preterm - Saving Thongsy", icon: "fa-solid fa-baby", youtubeId: "rEWgnM_9Rh4" },
             { title: "Supporting Children with Disabilities", icon: "fa-solid fa-wheelchair", youtubeId: "lvOV9vu88TY" },
